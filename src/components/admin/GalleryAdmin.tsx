@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/Toast";
 import { IconPlus, IconTrash, IconCheck, IconClose, IconPlay, IconImage } from "@/components/icons";
+import { ImageField } from "./ImageField";
 import {
   AdminCard,
   SectionHead,
@@ -118,21 +119,20 @@ export function GalleryAdmin() {
                 ))}
               </div>
             </Field>
-            <Field label="Посилання на медіа" hint="URL">
-              <AInput
-                value={draft.src || ""}
-                onChange={(e) => setDraft({ ...draft, src: e.target.value })}
-                placeholder="https://..."
-              />
-            </Field>
+            <ImageField
+              label={draft.type === "video" ? "Відео" : "Зображення"}
+              value={draft.src || ""}
+              onChange={(url) => setDraft({ ...draft, src: url })}
+              accept={draft.type === "video" ? "video/mp4" : "image/*"}
+              isVideo={draft.type === "video"}
+            />
             {draft.type === "video" && (
-              <Field label="Постер (превʼю відео)" hint="необовʼязково">
-                <AInput
-                  value={draft.poster || ""}
-                  onChange={(e) => setDraft({ ...draft, poster: e.target.value })}
-                  placeholder="https://..."
-                />
-              </Field>
+              <ImageField
+                label="Постер (превʼю відео)"
+                hint="необовʼязково, зображення"
+                value={draft.poster || ""}
+                onChange={(url) => setDraft({ ...draft, poster: url })}
+              />
             )}
             <Field label="Підпис">
               <AInput

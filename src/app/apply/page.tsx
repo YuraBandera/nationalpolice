@@ -65,7 +65,7 @@ export default async function ApplyPage() {
         <section className="bg-ice py-14 sm:py-20">
           <div className="container-x max-w-3xl">
             {open ? (
-              <ApplyForm />
+              <ApplyForm questions={db.applicationQuestions} />
             ) : (
               <div className="rounded-2xl border border-navy-900/10 bg-white p-8 text-center shadow-card sm:p-12">
                 <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-navy-50 text-navy-500">

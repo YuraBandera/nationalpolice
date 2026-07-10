@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/components/Toast";
 import { fmtDate } from "@/components/NewsSection";
 import { IconPlus, IconEdit, IconTrash, IconCheck, IconClose } from "@/components/icons";
+import { ImageField } from "./ImageField";
 import {
   AdminCard,
   SectionHead,
@@ -131,13 +132,11 @@ export function NewsAdmin() {
                 />
               </Field>
             </div>
-            <Field label="Посилання на фото" hint="URL">
-              <AInput
-                value={draft.image || ""}
-                onChange={(e) => setDraft({ ...draft, image: e.target.value })}
-                placeholder="https://..."
-              />
-            </Field>
+            <ImageField
+              label="Фото новини"
+              value={draft.image || ""}
+              onChange={(url) => setDraft({ ...draft, image: url })}
+            />
             <Field label="Короткий опис" hint="анонс у картці">
               <ATextarea
                 rows={2}

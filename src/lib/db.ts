@@ -54,6 +54,80 @@ function seed(): Database {
   const daysAgo = (d: number) => new Date(now.getTime() - d * 864e5).toISOString();
   return {
     settings: defaultSettings(),
+    units: [
+      {
+        id: uid(),
+        name: "Управління патрульної поліції",
+        short: "Порядок на вулицях міста",
+        description:
+          "Забезпечує охорону громадського порядку, реагує на виклики, контролює безпеку дорожнього руху та першою прибуває на місце подій. Обличчя поліції для мешканців Києва.",
+        icon: "car",
+        order: 1,
+      },
+      {
+        id: uid(),
+        name: "Кримінальна поліція",
+        short: "Розкриття злочинів",
+        description:
+          "Веде оперативно-розшукову діяльність, виявляє та розкриває тяжкі й особливо тяжкі злочини, працює з агентурою та документує протиправну діяльність.",
+        icon: "search",
+        order: 2,
+      },
+      {
+        id: uid(),
+        name: "Слідче управління",
+        short: "Досудове розслідування",
+        description:
+          "Здійснює досудове розслідування кримінальних проваджень, збирає доказову базу, взаємодіє з прокуратурою та передає справи до суду.",
+        icon: "file",
+        order: 3,
+      },
+      {
+        id: uid(),
+        name: "КОРД",
+        short: "Корпус оперативно-раптової дії",
+        description:
+          "Елітний спецпідрозділ. Затримання озброєних злочинців, звільнення заручників, силова підтримка операцій підвищеної складності.",
+        icon: "target",
+        order: 4,
+      },
+      {
+        id: uid(),
+        name: "Поліція особливого призначення",
+        short: "Масові заходи та посилення",
+        description:
+          "Забезпечує порядок під час масових заходів, охороняє важливі об'єкти та підсилює інші підрозділи в складних ситуаціях.",
+        icon: "shield",
+        order: 5,
+      },
+      {
+        id: uid(),
+        name: "Кіберполіція",
+        short: "Протидія кіберзлочинності",
+        description:
+          "Розслідує злочини у цифровому середовищі: шахрайство, витоки даних, протиправний контент. Проводить профілактику серед громадян.",
+        icon: "cpu",
+        order: 6,
+      },
+      {
+        id: uid(),
+        name: "Чергова частина",
+        short: "Координація 24/7",
+        description:
+          "Цілодобовий центр управління силами й засобами. Приймає виклики, розподіляє екіпажі та контролює оперативну обстановку в місті.",
+        icon: "radio",
+        order: 7,
+      },
+    ],
+    applicationQuestions: [
+      { id: uid(), label: "Steam", type: "short", required: false },
+      { id: uid(), label: "Часовий пояс", type: "short", required: false },
+      { id: uid(), label: "Досвід RolePlay", type: "long", required: false },
+      { id: uid(), label: "Чому хочете вступити?", type: "long", required: true },
+      { id: uid(), label: "Чому саме ГУНП?", type: "long", required: false },
+      { id: uid(), label: "Чи були покарання?", type: "short", required: false },
+      { id: uid(), label: "Додаткова інформація", type: "short", required: false },
+    ],
     stats: [
       { id: uid(), label: "Працівників", value: 248, suffix: "" },
       { id: uid(), label: "Патрулів на зміні", value: 32, suffix: "" },
@@ -158,6 +232,8 @@ function normalize(db: Partial<Database>): Database {
   const base = seed();
   return {
     settings: { ...base.settings, ...(db.settings || {}) },
+    units: db.units ?? base.units,
+    applicationQuestions: db.applicationQuestions ?? base.applicationQuestions,
     stats: db.stats ?? base.stats,
     leadership: db.leadership ?? base.leadership,
     news: db.news ?? base.news,

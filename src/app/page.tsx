@@ -21,7 +21,7 @@ export default async function HomePage() {
       <Hero />
       <About stats={db.stats} />
       <Leadership leaders={leaders} />
-      <Units />
+      <Units units={db.units} />
       <NewsSection news={news} />
       <Gallery items={gallery} />
       <Contacts contacts={db.contacts} />

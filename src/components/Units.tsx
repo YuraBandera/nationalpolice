@@ -3,11 +3,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Reveal } from "./Reveal";
-import { UNITS, type Unit } from "@/lib/site";
+import { unitIcon } from "@/lib/unitIcons";
 import { IconClose, IconArrowRight } from "./icons";
+import type { Unit } from "@/lib/types";
 
-export function Units() {
+export function Units({ units }: { units: Unit[] }) {
   const [active, setActive] = useState<Unit | null>(null);
+  const list = [...units].sort((a, b) => a.order - b.order);
 
   return (
     <section id="units" className="relative overflow-hidden bg-navy-950 py-24 text-white">
@@ -18,7 +20,7 @@ export function Units() {
             <span className="h-px w-6 bg-navy-400" /> Підрозділи
           </span>
           <h2 className="mt-4 max-w-2xl font-head text-3xl font-bold tracking-tight sm:text-4xl">
-            Сім напрямів однієї роботи
+            Напрями однієї роботи
           </h2>
           <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-white/60">
             Кожен підрозділ виконує свою роль у забезпеченні безпеки міста. Натисніть картку, щоб
@@ -27,23 +29,26 @@ export function Units() {
         </Reveal>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {UNITS.map((u, i) => (
-            <Reveal key={u.slug} delay={i * 0.05}>
-              <button
-                onClick={() => setActive(u)}
-                className="group flex h-full w-full flex-col items-start rounded-2xl border border-white/10 bg-white/[0.04] p-6 text-left backdrop-blur transition hover:-translate-y-1 hover:border-navy-400/40 hover:bg-white/[0.07]"
-              >
-                <div className="mb-4 grid h-12 w-12 place-items-center rounded-xl bg-navy-600/30 text-navy-300 ring-1 ring-inset ring-white/10 transition group-hover:bg-navy-500/40 group-hover:text-white">
-                  <u.Icon width={24} height={24} />
-                </div>
-                <h3 className="font-head text-[17px] font-semibold">{u.name}</h3>
-                <p className="mt-1.5 text-[13.5px] text-white/55">{u.short}</p>
-                <span className="mt-4 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-signal opacity-0 transition group-hover:opacity-100">
-                  Детальніше <IconArrowRight width={14} height={14} />
-                </span>
-              </button>
-            </Reveal>
-          ))}
+          {list.map((u, i) => {
+            const Icon = unitIcon(u.icon);
+            return (
+              <Reveal key={u.id} delay={i * 0.05}>
+                <button
+                  onClick={() => setActive(u)}
+                  className="group flex h-full w-full flex-col items-start rounded-2xl border border-white/10 bg-white/[0.04] p-6 text-left backdrop-blur transition hover:-translate-y-1 hover:border-navy-400/40 hover:bg-white/[0.07]"
+                >
+                  <div className="mb-4 grid h-12 w-12 place-items-center rounded-xl bg-navy-600/30 text-navy-300 ring-1 ring-inset ring-white/10 transition group-hover:bg-navy-500/40 group-hover:text-white">
+                    <Icon width={24} height={24} />
+                  </div>
+                  <h3 className="font-head text-[17px] font-semibold">{u.name}</h3>
+                  <p className="mt-1.5 text-[13.5px] text-white/55">{u.short}</p>
+                  <span className="mt-4 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-signal opacity-0 transition group-hover:opacity-100">
+                    Детальніше <IconArrowRight width={14} height={14} />
+                  </span>
+                </button>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
 
@@ -71,9 +76,14 @@ export function Units() {
               >
                 <IconClose />
               </button>
-              <div className="mb-5 grid h-14 w-14 place-items-center rounded-xl bg-navy-600/30 text-navy-300 ring-1 ring-inset ring-white/10">
-                <active.Icon width={28} height={28} />
-              </div>
+              {(() => {
+                const Icon = unitIcon(active.icon);
+                return (
+                  <div className="mb-5 grid h-14 w-14 place-items-center rounded-xl bg-navy-600/30 text-navy-300 ring-1 ring-inset ring-white/10">
+                    <Icon width={28} height={28} />
+                  </div>
+                );
+              })()}
               <h3 className="font-head text-xl font-bold">{active.name}</h3>
               <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-signal">{active.short}</p>
               <p className="mt-4 text-[15px] leading-relaxed text-white/70">{active.description}</p>

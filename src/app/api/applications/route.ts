@@ -4,28 +4,33 @@ export const dynamic = "force-dynamic";
 import { readDb, mutate, uid } from "@/lib/db";
 import { isAuthed } from "@/lib/auth";
 import { notifyApplication } from "@/lib/discord";
-import type { Application } from "@/lib/types";
+import type { Application, ApplicationAnswer } from "@/lib/types";
 
 const req = (v: unknown) => typeof v === "string" && v.trim().length > 0;
 
 export async function POST(request: Request) {
   const b = await request.json().catch(() => ({}));
-  if (!req(b.firstName) || !req(b.lastName) || !req(b.discord) || !req(b.age) || !req(b.whyJoin)) {
+  if (!req(b.firstName) || !req(b.lastName) || !req(b.discord) || !req(b.age)) {
     return NextResponse.json({ error: "Заповніть обов'язкові поля" }, { status: 400 });
   }
+
+  const answers: ApplicationAnswer[] = Array.isArray(b.answers)
+    ? b.answers
+        .map((a: ApplicationAnswer) => ({
+          questionId: String(a.questionId || ""),
+          label: String(a.label || "").slice(0, 200),
+          value: String(a.value || "").slice(0, 4000),
+        }))
+        .filter((a: ApplicationAnswer) => a.label)
+    : [];
+
   const app: Application = {
     id: uid(),
     firstName: String(b.firstName).slice(0, 80),
     lastName: String(b.lastName).slice(0, 80),
     discord: String(b.discord).slice(0, 80),
     age: String(b.age).slice(0, 20),
-    steam: String(b.steam || "").slice(0, 200),
-    timezone: String(b.timezone || "").slice(0, 60),
-    rpExperience: String(b.rpExperience || "").slice(0, 4000),
-    whyJoin: String(b.whyJoin || "").slice(0, 4000),
-    whyGunp: String(b.whyGunp || "").slice(0, 4000),
-    punishments: String(b.punishments || "").slice(0, 2000),
-    extra: String(b.extra || "").slice(0, 2000),
+    answers,
     status: "new",
     createdAt: new Date().toISOString(),
   };

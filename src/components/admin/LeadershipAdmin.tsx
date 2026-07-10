@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/Toast";
 import { IconPlus, IconTrash, IconCheck } from "@/components/icons";
+import { ImageField } from "./ImageField";
 import { AdminCard, SectionHead, Field, AInput, ATextarea, ABtn, EmptyState } from "./ui";
 import type { Leader } from "@/lib/types";
 
@@ -117,13 +118,12 @@ export function LeadershipAdmin() {
                     <AInput value={l.rank} onChange={(e) => upd(i, { rank: e.target.value })} />
                   </Field>
                 </div>
-                <Field label="Посилання на фото" hint="URL, необовʼязково">
-                  <AInput
-                    value={l.photo}
-                    onChange={(e) => upd(i, { photo: e.target.value })}
-                    placeholder="https://..."
-                  />
-                </Field>
+                <ImageField
+                  label="Фото"
+                  hint="файл або посилання, необов'язково"
+                  value={l.photo}
+                  onChange={(url) => upd(i, { photo: url })}
+                />
                 <Field label="Короткий опис">
                   <ATextarea rows={2} value={l.bio} onChange={(e) => upd(i, { bio: e.target.value })} />
                 </Field>

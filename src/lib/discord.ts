@@ -25,20 +25,27 @@ const clip = (s: string, n = 1000) =>
   !s ? "—" : s.length > n ? s.slice(0, n - 1) + "…" : s;
 
 export async function notifyApplication(a: Application): Promise<void> {
+  const base = [
+    { name: "Ім'я", value: clip(`${a.firstName} ${a.lastName}`, 200), inline: true },
+    { name: "Discord", value: clip(a.discord, 200), inline: true },
+    { name: "Вік", value: clip(a.age, 50), inline: true },
+  ];
+  const answerFields = (a.answers || [])
+    .filter((x) => x.value && x.value.trim())
+    .map((x) => ({ name: clip(x.label, 200), value: clip(x.value) }));
+  // застарілі заявки без answers — показуємо старі поля, якщо є
+  const legacy = !a.answers
+    ? [
+        { name: "Досвід RP", value: clip(a.rpExperience || "") },
+        { name: "Чому хоче вступити", value: clip(a.whyJoin || "") },
+        { name: "Чому саме ГУНП", value: clip(a.whyGunp || "") },
+      ].filter((f) => f.value !== "—")
+    : [];
+
   await send(process.env.DISCORD_WEBHOOK_APPLICATIONS, {
     title: "📨 Нова заявка на вступ",
     color: 0x1e5bb8,
-    fields: [
-      { name: "Ім'я", value: clip(`${a.firstName} ${a.lastName}`, 200), inline: true },
-      { name: "Discord", value: clip(a.discord, 200), inline: true },
-      { name: "Вік", value: clip(a.age, 50), inline: true },
-      { name: "Часовий пояс", value: clip(a.timezone, 100), inline: true },
-      { name: "Steam", value: clip(a.steam, 200), inline: true },
-      { name: "Досвід RP", value: clip(a.rpExperience) },
-      { name: "Чому хоче вступити", value: clip(a.whyJoin) },
-      { name: "Чому саме ГУНП", value: clip(a.whyGunp) },
-      { name: "Покарання", value: clip(a.punishments) },
-    ],
+    fields: [...base, ...answerFields, ...legacy].slice(0, 24),
     footer: { text: `ID заявки: ${a.id}` },
     timestamp: a.createdAt,
   });

@@ -34,7 +34,7 @@ function fmt(iso: string) {
   }
 }
 
-const APP_FIELDS: { key: keyof Application; label: string }[] = [
+const APP_LEGACY: { key: keyof Application; label: string }[] = [
   { key: "steam", label: "Steam" },
   { key: "timezone", label: "Часовий пояс" },
   { key: "rpExperience", label: "Досвід RolePlay" },
@@ -112,7 +112,6 @@ export function SubmissionsAdmin({ kind }: { kind: Kind }) {
       ? `${(r as Application).firstName} ${(r as Application).lastName}`.trim() || "Без імені"
       : `Скарга на ${(r as Complaint).against || "—"}`;
 
-  const fields = kind === "applications" ? APP_FIELDS : CMP_FIELDS;
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: rows.length };
     for (const s of statuses) c[s] = rows.filter((r) => r.status === s).length;
@@ -207,14 +206,28 @@ export function SubmissionsAdmin({ kind }: { kind: Kind }) {
 
             <div className="max-h-[55vh] space-y-4 overflow-y-auto p-5">
               <DetailRow label="Discord" value={(active as Application).discord} />
-              {kind === "applications" && (
-                <DetailRow label="Вік" value={(active as Application).age} />
+              {kind === "applications" ? (
+                <>
+                  <DetailRow label="Вік" value={(active as Application).age} />
+                  {((active as Application).answers || [])
+                    .filter((a) => a.value && a.value.trim())
+                    .map((a, idx) => (
+                      <DetailRow key={a.questionId || idx} label={a.label} value={a.value} />
+                    ))}
+                  {!(active as Application).answers &&
+                    APP_LEGACY.map((f) => {
+                      const v = (active as never)[f.key] as string;
+                      if (!v) return null;
+                      return <DetailRow key={String(f.key)} label={f.label} value={v} />;
+                    })}
+                </>
+              ) : (
+                CMP_FIELDS.map((f) => {
+                  const v = (active as never)[f.key] as string;
+                  if (!v) return null;
+                  return <DetailRow key={String(f.key)} label={f.label} value={v} />;
+                })
               )}
-              {fields.map((f) => {
-                const v = (active as never)[f.key] as string;
-                if (!v) return null;
-                return <DetailRow key={String(f.key)} label={f.label} value={v} />;
-              })}
             </div>
 
             <div className="flex flex-wrap items-center gap-2 border-t border-white/10 p-5">

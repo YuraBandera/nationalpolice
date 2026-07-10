@@ -42,19 +42,46 @@ export interface Contacts {
   socials: { label: string; url: string }[];
 }
 
+/** Підрозділ (керується з адмінки) */
+export interface Unit {
+  id: string;
+  name: string;
+  short: string;
+  description: string;
+  icon: string; // ключ іконки, див. UNIT_ICONS
+  order: number;
+}
+
+/** Питання анкети (керується з адмінки) */
+export interface ApplicationQuestion {
+  id: string;
+  label: string;
+  type: "short" | "long";
+  required: boolean;
+}
+
+/** Відповідь на питання анкети */
+export interface ApplicationAnswer {
+  questionId: string;
+  label: string;
+  value: string;
+}
+
 export interface Application {
   id: string;
   firstName: string;
   lastName: string;
   discord: string;
   age: string;
-  steam: string;
-  timezone: string;
-  rpExperience: string;
-  whyJoin: string;
-  whyGunp: string;
-  punishments: string;
-  extra: string;
+  answers?: ApplicationAnswer[];
+  // застарілі поля — лишаються для сумісності зі старими заявками:
+  steam?: string;
+  timezone?: string;
+  rpExperience?: string;
+  whyJoin?: string;
+  whyGunp?: string;
+  punishments?: string;
+  extra?: string;
   status: "new" | "reviewed" | "accepted" | "rejected";
   createdAt: string;
 }
@@ -80,6 +107,8 @@ export interface SiteSettings {
 
 export interface Database {
   settings: SiteSettings;
+  units: Unit[];
+  applicationQuestions: ApplicationQuestion[];
   news: NewsItem[];
   gallery: GalleryItem[];
   leadership: Leader[];

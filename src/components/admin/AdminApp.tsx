@@ -13,12 +13,16 @@ import {
   IconUsers,
   IconTarget,
   IconPhone,
+  IconShield,
+  IconEdit,
   IconArrowRight,
 } from "@/components/icons";
 import { NewsAdmin } from "./NewsAdmin";
 import { GalleryAdmin } from "./GalleryAdmin";
 import { SubmissionsAdmin } from "./SubmissionsAdmin";
 import { RecruitmentAdmin } from "./RecruitmentAdmin";
+import { UnitsAdmin } from "./UnitsAdmin";
+import { FormAdmin } from "./FormAdmin";
 import { LeadershipAdmin } from "./LeadershipAdmin";
 import { StatsAdmin } from "./StatsAdmin";
 import { ContactsAdmin } from "./ContactsAdmin";
@@ -30,6 +34,8 @@ type Tab =
   | "applications"
   | "complaints"
   | "recruitment"
+  | "form"
+  | "units"
   | "leadership"
   | "stats"
   | "contacts";
@@ -40,6 +46,8 @@ const TABS: { id: Tab; label: string; Icon: (p: { width?: number; height?: numbe
   { id: "applications", label: "Заявки", Icon: IconFile },
   { id: "complaints", label: "Скарги", Icon: IconAlert },
   { id: "recruitment", label: "Набір", Icon: IconLock },
+  { id: "form", label: "Форма заявки", Icon: IconEdit },
+  { id: "units", label: "Підрозділи", Icon: IconShield },
   { id: "leadership", label: "Керівництво", Icon: IconUsers },
   { id: "stats", label: "Статистика", Icon: IconTarget },
   { id: "contacts", label: "Контакти", Icon: IconPhone },
@@ -202,6 +210,8 @@ export function AdminApp() {
           {tab === "applications" && <SubmissionsAdmin kind="applications" />}
           {tab === "complaints" && <SubmissionsAdmin kind="complaints" />}
           {tab === "recruitment" && <RecruitmentAdmin />}
+          {tab === "form" && <FormAdmin />}
+          {tab === "units" && <UnitsAdmin />}
           {tab === "leadership" && <LeadershipAdmin />}
           {tab === "stats" && <StatsAdmin />}
           {tab === "contacts" && <ContactsAdmin />}
