@@ -6,6 +6,8 @@ export interface NewsItem {
   image: string;
   excerpt: string;
   body: string;
+  likes: number;
+  dislikes: number;
   createdAt: string;
 }
 

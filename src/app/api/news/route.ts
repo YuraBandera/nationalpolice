@@ -23,6 +23,8 @@ export async function POST(request: Request) {
     image: String(b.image || ""),
     excerpt: String(b.excerpt || "").slice(0, 400),
     body: String(b.body || "").slice(0, 20000),
+    likes: 0,
+    dislikes: 0,
     createdAt: new Date().toISOString(),
   };
   await mutate((db) => db.news.unshift(item));

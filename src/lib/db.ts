@@ -178,6 +178,8 @@ function seed(): Database {
         excerpt:
           "За минулий тиждень екіпажі відпрацювали понад 300 викликів та забезпечили порядок на масових заходах.",
         body: "За минулий тиждень екіпажі патрульної поліції відпрацювали понад 300 викликів. Особлива увага приділялася безпеці дорожнього руху та охороні громадського порядку під час масових заходів у центрі міста.\n\nНачальник управління подякував особовому складу за витримку й професіоналізм. Робота триває в посиленому режимі.",
+        likes: 0,
+        dislikes: 0,
         createdAt: daysAgo(1),
       },
       {
@@ -189,6 +191,8 @@ function seed(): Database {
         excerpt:
           "Управління відкриває набір нових співробітників. Подати заявку можна безпосередньо на сайті.",
         body: "Головне управління оголошує набір кандидатів на службу. Ми шукаємо відповідальних та вмотивованих гравців, готових дотримуватися правил рольової гри та статуту.\n\nЩоб приєднатися, заповніть форму «Подати заявку». Після розгляду з вами зв'яжуться у Discord.",
+        likes: 0,
+        dislikes: 0,
         createdAt: daysAgo(3),
       },
       {
@@ -200,6 +204,8 @@ function seed(): Database {
         excerpt:
           "Спеціалісти кіберполіції відпрацювали звернення громадян щодо шахрайства в мережі.",
         body: "Підрозділ кіберполіції провів планову роботу за зверненнями громадян. Відпрацьовано низку випадків онлайн-шахрайства, надано рекомендації щодо цифрової безпеки.\n\nНагадуємо: не передавайте дані карток стороннім особам.",
+        likes: 0,
+        dislikes: 0,
         createdAt: daysAgo(6),
       },
     ],
@@ -236,7 +242,11 @@ function normalize(db: Partial<Database>): Database {
     applicationQuestions: db.applicationQuestions ?? base.applicationQuestions,
     stats: db.stats ?? base.stats,
     leadership: db.leadership ?? base.leadership,
-    news: db.news ?? base.news,
+    news: (db.news ?? base.news).map((n) => ({
+      ...n,
+      likes: n.likes ?? 0,
+      dislikes: n.dislikes ?? 0,
+    })),
     gallery: db.gallery ?? base.gallery,
     contacts: { ...base.contacts, ...(db.contacts || {}) },
     applications: db.applications ?? [],
@@ -287,7 +297,7 @@ async function loadFile(): Promise<Database> {
     const raw = await fs.readFile(DB_PATH, "utf8");
     return normalize(JSON.parse(raw));
   } catch {
-    const data = seed();
+    const data = normalize(seed());
     await fs.mkdir(DATA_DIR, { recursive: true });
     await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2), "utf8");
     return data;
@@ -306,7 +316,7 @@ async function ensure(): Promise<Database> {
   if (useR2) {
     let db = await loadR2();
     if (!db) {
-      db = seed();
+      db = normalize(seed());
       await saveR2(db);
     }
     cache = db;

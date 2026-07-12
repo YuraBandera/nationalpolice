@@ -4,7 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import { Reveal } from "./Reveal";
-import { IconClose, IconNews, IconArrowRight } from "./icons";
+import { IconClose, IconNews, IconArrowRight, IconThumbUp, IconThumbDown } from "./icons";
+import { NewsVote } from "./NewsVote";
 import type { NewsItem } from "@/lib/types";
 
 export function fmtDate(iso: string) {
@@ -37,8 +38,16 @@ export function NewsCard({ n, onOpen }: { n: NewsItem; onOpen: (n: NewsItem) => 
           {n.title}
         </h3>
         <p className="mt-2 flex-1 text-[14px] leading-relaxed text-navy-800/65">{n.excerpt}</p>
-        <span className="mt-4 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-navy-500">
-          {n.author} <IconArrowRight width={13} height={13} className="ml-auto" />
+        <span className="mt-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wide text-navy-500">
+          {n.author}
+          <span className="ml-auto flex items-center gap-3 normal-case tracking-normal">
+            <span className="flex items-center gap-1 text-good/80">
+              <IconThumbUp width={13} height={13} /> {n.likes ?? 0}
+            </span>
+            <span className="flex items-center gap-1 text-bad/70">
+              <IconThumbDown width={13} height={13} /> {n.dislikes ?? 0}
+            </span>
+          </span>
         </span>
       </div>
     </button>
@@ -89,6 +98,15 @@ export function NewsReader({ item, onClose }: { item: NewsItem | null; onClose: 
                 {item.body.split("\n").filter(Boolean).map((p, i) => (
                   <p key={i}>{p}</p>
                 ))}
+              </div>
+              <div className="mt-7 flex items-center justify-between gap-4 border-t border-navy-900/8 pt-5">
+                <span className="text-[13px] text-navy-800/50">Чи корисна ця новина?</span>
+                <NewsVote
+                  key={item.id}
+                  newsId={item.id}
+                  likes={item.likes ?? 0}
+                  dislikes={item.dislikes ?? 0}
+                />
               </div>
             </div>
           </motion.article>
