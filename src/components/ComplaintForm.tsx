@@ -2,16 +2,18 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useToast } from "./Toast";
 import { IconCheck, IconArrowRight } from "./icons";
 import { UNITS } from "@/lib/site";
 
-const empty = { discord: "", nickname: "", against: "", unit: "", date: "", description: "", evidence: "" };
+const empty = { discord: "", nickname: "", robloxSelf: "", robloxTarget: "", against: "", unit: "", date: "", description: "", evidence: "" };
 
 export function ComplaintForm() {
   const toast = useToast();
   const [f, setF] = useState(empty);
+  const [website, setWebsite] = useState(""); // honeypot — має лишатись порожнім
+  const openedAt = useRef<number>(Date.now());
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -19,7 +21,7 @@ export function ComplaintForm() {
     setF((s) => ({ ...s, [k]: e.target.value }));
 
   async function submit() {
-    if (!f.discord || !f.against || !f.description) {
+    if (!f.discord || !f.robloxSelf || !f.robloxTarget || !f.description) {
       toast("Заповніть обов'язкові поля", "error");
       return;
     }
@@ -28,9 +30,13 @@ export function ComplaintForm() {
       const res = await fetch("/api/complaints", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(f),
+        body: JSON.stringify({ ...f, website, _t: openedAt.current }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        toast(d.error || "Не вдалося подати скаргу. Спробуйте ще раз", "error");
+        return;
+      }
       setDone(true);
       setF(empty);
     } catch {
@@ -64,18 +70,33 @@ export function ComplaintForm() {
         </motion.div>
       ) : (
         <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-2xl border border-navy-900/8 bg-white p-6 shadow-card sm:p-8">
+          {/* honeypot: приховане поле для ботів. Люди його не бачать і не заповнюють. */}
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            aria-hidden="true"
+            style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+          />
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="field-label">Ваш Discord *</label>
               <input className="field" value={f.discord} onChange={set("discord")} placeholder="username" />
             </div>
             <div>
-              <label className="field-label">Ваш Nickname</label>
-              <input className="field" value={f.nickname} onChange={set("nickname")} placeholder="Ігровий нік" />
+              <label className="field-label">Ваш нік у Roblox *</label>
+              <input className="field" value={f.robloxSelf} onChange={set("robloxSelf")} placeholder="Ваш Roblox-нікнейм" />
             </div>
             <div>
-              <label className="field-label">На кого скарга *</label>
-              <input className="field" value={f.against} onChange={set("against")} placeholder="Нік / Discord порушника" />
+              <label className="field-label">Roblox-нік порушника *</label>
+              <input className="field" value={f.robloxTarget} onChange={set("robloxTarget")} placeholder="Roblox-нік того, на кого скарга" />
+            </div>
+            <div>
+              <label className="field-label">Discord порушника</label>
+              <input className="field" value={f.against} onChange={set("against")} placeholder="Якщо відомо" />
             </div>
             <div>
               <label className="field-label">Підрозділ</label>
@@ -87,7 +108,7 @@ export function ComplaintForm() {
                 <option value="Інше">Інше</option>
               </select>
             </div>
-            <div className="sm:col-span-2">
+            <div>
               <label className="field-label">Дата ситуації</label>
               <input className="field" type="date" value={f.date} onChange={set("date")} />
             </div>

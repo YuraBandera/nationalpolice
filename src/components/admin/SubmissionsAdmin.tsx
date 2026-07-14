@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/Toast";
 import { IconTrash, IconFile, IconAlert, IconClose } from "@/components/icons";
 import { AdminCard, SectionHead, ABtn, StatusTag, EmptyState } from "./ui";
+import { RobloxProfile } from "./RobloxProfile";
 import type { Application, Complaint } from "@/lib/types";
 
 type Kind = "applications" | "complaints";
@@ -222,11 +223,21 @@ export function SubmissionsAdmin({ kind }: { kind: Kind }) {
                     })}
                 </>
               ) : (
-                CMP_FIELDS.map((f) => {
-                  const v = (active as never)[f.key] as string;
-                  if (!v) return null;
-                  return <DetailRow key={String(f.key)} label={f.label} value={v} />;
-                })
+                <>
+                  <RobloxProfile
+                    label="Roblox заявника"
+                    username={(active as Complaint).robloxSelf}
+                  />
+                  <RobloxProfile
+                    label="Roblox порушника"
+                    username={(active as Complaint).robloxTarget}
+                  />
+                  {CMP_FIELDS.map((f) => {
+                    const v = (active as never)[f.key] as string;
+                    if (!v) return null;
+                    return <DetailRow key={String(f.key)} label={f.label} value={v} />;
+                  })}
+                </>
               )}
             </div>
 

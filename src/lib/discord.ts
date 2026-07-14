@@ -1,4 +1,5 @@
 import type { Application, Complaint } from "./types";
+import { resolveRoblox } from "./roblox";
 
 interface Embed {
   title: string;
@@ -6,6 +7,7 @@ interface Embed {
   fields: { name: string; value: string; inline?: boolean }[];
   timestamp: string;
   footer?: { text: string };
+  thumbnail?: { url: string };
 }
 
 async function send(url: string | undefined, embed: Embed): Promise<void> {
@@ -52,12 +54,32 @@ export async function notifyApplication(a: Application): Promise<void> {
 }
 
 export async function notifyComplaint(c: Complaint): Promise<void> {
+  // Резолвимо профілі обох сторін (best-effort — не блокуємо надовго)
+  const [self, target] = await Promise.all([
+    c.robloxSelf ? resolveRoblox(c.robloxSelf).catch(() => null) : Promise.resolve(null),
+    c.robloxTarget ? resolveRoblox(c.robloxTarget).catch(() => null) : Promise.resolve(null),
+  ]);
+
+  const selfVal = self
+    ? `[${self.displayName} (@${self.name})](${self.profileUrl})`
+    : c.robloxSelf
+      ? `${c.robloxSelf} (профіль не знайдено)`
+      : "—";
+  const targetVal = target
+    ? `[${target.displayName} (@${target.name})](${target.profileUrl})`
+    : c.robloxTarget
+      ? `${c.robloxTarget} (профіль не знайдено)`
+      : "—";
+
   await send(process.env.DISCORD_WEBHOOK_COMPLAINTS, {
     title: "⚠️ Нова скарга",
     color: 0xef4444,
+    thumbnail: target?.avatar ? { url: target.avatar } : undefined,
     fields: [
-      { name: "Від", value: clip(`${c.nickname} (${c.discord})`, 200) },
-      { name: "На кого", value: clip(c.against, 200), inline: true },
+      { name: "Від (Discord)", value: clip(c.discord, 200), inline: true },
+      { name: "Roblox заявника", value: clip(selfVal, 300), inline: true },
+      { name: "Roblox порушника", value: clip(targetVal, 300) },
+      { name: "Discord порушника", value: clip(c.against, 200), inline: true },
       { name: "Підрозділ", value: clip(c.unit, 200), inline: true },
       { name: "Дата ситуації", value: clip(c.date, 100), inline: true },
       { name: "Опис", value: clip(c.description) },

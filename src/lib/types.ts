@@ -92,6 +92,8 @@ export interface Complaint {
   id: string;
   discord: string;
   nickname: string;
+  robloxSelf?: string;
+  robloxTarget?: string;
   against: string;
   unit: string;
   date: string;
