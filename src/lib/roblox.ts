@@ -8,6 +8,30 @@ export interface RobloxUser {
   avatar?: string;
 }
 
+export type RobloxCheck = "found" | "not_found" | "error";
+
+/**
+ * Перевіряє існування Roblox-ніка.
+ * "found" — існує; "not_found" — точно немає; "error" — API недоступний (не блокуємо).
+ */
+export async function checkRobloxExists(username: string): Promise<RobloxCheck> {
+  const uname = String(username || "").trim();
+  if (!uname) return "not_found";
+  try {
+    const res = await fetch("https://users.roblox.com/v1/usernames/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usernames: [uname], excludeBannedUsers: false }),
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!res.ok) return "error";
+    const data = await res.json();
+    return data?.data?.[0]?.id ? "found" : "not_found";
+  } catch {
+    return "error";
+  }
+}
+
 export async function resolveRoblox(username: string): Promise<RobloxUser | null> {
   const uname = String(username || "").trim();
   if (!uname) return null;

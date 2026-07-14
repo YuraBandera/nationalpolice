@@ -5,6 +5,7 @@ import { readDb, mutate, uid } from "@/lib/db";
 import { isAuthed } from "@/lib/auth";
 import { notifyComplaint } from "@/lib/discord";
 import { clientIp, checkSpam, looksLikeBot } from "@/lib/antispam";
+import { checkRobloxExists } from "@/lib/roblox";
 import type { Complaint } from "@/lib/types";
 
 const req = (v: unknown) => typeof v === "string" && v.trim().length > 0;
@@ -26,6 +27,25 @@ export async function POST(request: Request) {
   if (String(b.description).trim().length < 15) {
     return NextResponse.json(
       { error: "Опишіть ситуацію докладніше (мінімум 15 символів)." },
+      { status: 400 }
+    );
+  }
+
+  // 3.5) Перевірка існування Roblox-ніків. Блокуємо лише якщо Roblox ТОЧНО каже, що ніка немає.
+  // Якщо API недоступний ("error") — пропускаємо, щоб збій Roblox не блокував чесних людей.
+  const [selfCheck, targetCheck] = await Promise.all([
+    checkRobloxExists(String(b.robloxSelf)),
+    checkRobloxExists(String(b.robloxTarget)),
+  ]);
+  if (selfCheck === "not_found") {
+    return NextResponse.json(
+      { error: "Ваш Roblox-нік не знайдено. Перевірте, чи правильно введено." },
+      { status: 400 }
+    );
+  }
+  if (targetCheck === "not_found") {
+    return NextResponse.json(
+      { error: "Roblox-нік порушника не знайдено. Перевірте, чи правильно введено." },
       { status: 400 }
     );
   }
