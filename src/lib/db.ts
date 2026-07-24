@@ -128,6 +128,8 @@ function seed(): Database {
       { id: uid(), label: "Чи були покарання?", type: "short", required: false },
       { id: uid(), label: "Додаткова інформація", type: "short", required: false },
     ],
+    investigators: [],
+    erdr: [],
     stats: [
       { id: uid(), label: "Працівників", value: 248, suffix: "" },
       { id: uid(), label: "Патрулів на зміні", value: 32, suffix: "" },
@@ -240,6 +242,8 @@ function normalize(db: Partial<Database>): Database {
     settings: { ...base.settings, ...(db.settings || {}) },
     units: db.units ?? base.units,
     applicationQuestions: db.applicationQuestions ?? base.applicationQuestions,
+    investigators: db.investigators ?? base.investigators,
+    erdr: db.erdr ?? base.erdr,
     stats: db.stats ?? base.stats,
     leadership: db.leadership ?? base.leadership,
     news: (db.news ?? base.news).map((n) => ({

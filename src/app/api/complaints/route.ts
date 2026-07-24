@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   // 4) Ліміт за IP + захист від дублів
   const ip = clientIp(request);
   const spam = checkSpam(ip, {
-    minGapMs: 20_000,
+    minGapMs: 5 * 60_000, // кулдаун 5 хвилин між скаргами з однієї адреси
     max: 6,
     windowMs: 60 * 60_000,
     dupText: String(b.description),

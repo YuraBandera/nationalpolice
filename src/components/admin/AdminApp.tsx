@@ -21,6 +21,7 @@ import { NewsAdmin } from "./NewsAdmin";
 import { GalleryAdmin } from "./GalleryAdmin";
 import { SubmissionsAdmin } from "./SubmissionsAdmin";
 import { RecruitmentAdmin } from "./RecruitmentAdmin";
+import { ErdrAdmin } from "./ErdrAdmin";
 import { UnitsAdmin } from "./UnitsAdmin";
 import { FormAdmin } from "./FormAdmin";
 import { LeadershipAdmin } from "./LeadershipAdmin";
@@ -36,6 +37,7 @@ type Tab =
   | "recruitment"
   | "form"
   | "units"
+  | "erdr"
   | "leadership"
   | "stats"
   | "contacts";
@@ -48,6 +50,7 @@ const TABS: { id: Tab; label: string; Icon: (p: { width?: number; height?: numbe
   { id: "recruitment", label: "Набір", Icon: IconLock },
   { id: "form", label: "Форма заявки", Icon: IconEdit },
   { id: "units", label: "Підрозділи", Icon: IconShield },
+  { id: "erdr", label: "ЄРДР", Icon: IconFile },
   { id: "leadership", label: "Керівництво", Icon: IconUsers },
   { id: "stats", label: "Статистика", Icon: IconTarget },
   { id: "contacts", label: "Контакти", Icon: IconPhone },
@@ -212,6 +215,7 @@ export function AdminApp() {
           {tab === "recruitment" && <RecruitmentAdmin />}
           {tab === "form" && <FormAdmin />}
           {tab === "units" && <UnitsAdmin />}
+          {tab === "erdr" && <ErdrAdmin />}
           {tab === "leadership" && <LeadershipAdmin />}
           {tab === "stats" && <StatsAdmin />}
           {tab === "contacts" && <ContactsAdmin />}

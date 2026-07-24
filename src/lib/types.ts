@@ -109,10 +109,49 @@ export interface SiteSettings {
   recruitmentClosedMessage: string;
 }
 
+/** Акаунт слідчого ЄРДР */
+export interface Investigator {
+  id: string;
+  login: string;
+  passHash: string; // формат "salt:hash"
+  name: string;
+  rank: string;
+  active: boolean;
+  createdAt: string;
+}
+
+/** Запис у журналі провадження */
+export interface ErdrEntry {
+  id: string;
+  text: string;
+  author: string;
+  at: string;
+}
+
+export type ErdrStatus = "registered" | "investigating" | "suspended" | "court" | "closed";
+
+/** Провадження ЄРДР */
+export interface ErdrCase {
+  id: string;
+  number: string; // номер ЄРДР
+  articles: string[]; // статті ККУ
+  fabula: string; // фабула
+  applicant: string; // заявник (Roblox нік)
+  suspect: string; // підозрюваний (Roblox нік)
+  status: ErdrStatus;
+  investigatorId: string; // хто веде ("" — не призначено)
+  source: "citizen" | "police";
+  entries: ErdrEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Database {
   settings: SiteSettings;
   units: Unit[];
   applicationQuestions: ApplicationQuestion[];
+  investigators: Investigator[];
+  erdr: ErdrCase[];
   news: NewsItem[];
   gallery: GalleryItem[];
   leadership: Leader[];

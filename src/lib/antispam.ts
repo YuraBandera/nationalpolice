@@ -59,7 +59,10 @@ export function checkSpam(ip: string, opts: SpamCheckOptions = {}): SpamResult {
   if (hits.length > 0) {
     const last = hits[hits.length - 1].t;
     if (now - last < minGapMs) {
-      return { ok: false, reason: "Ви надсилаєте занадто часто. Зачекайте трохи." };
+      const leftSec = Math.ceil((minGapMs - (now - last)) / 1000);
+      const leftMin = Math.ceil(leftSec / 60);
+      const wait = leftSec >= 60 ? `${leftMin} хв` : `${leftSec} с`;
+      return { ok: false, reason: `Зачекайте ${wait} перед наступною скаргою.` };
     }
   }
 
