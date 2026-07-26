@@ -40,6 +40,12 @@ export async function POST(request: Request) {
       fabula: String(b.fabula).slice(0, 5000),
       applicant: String(b.applicant || "").slice(0, 60),
       suspect: String(b.suspect || "").slice(0, 60),
+      fullName: String(b.fullName || "").slice(0, 160),
+      court: String(b.court || "").slice(0, 200),
+      eventDate: String(b.eventDate || "").slice(0, 120),
+      eventPlace: String(b.eventPlace || "").slice(0, 200),
+      witnesses: String(b.witnesses || "").slice(0, 400),
+      evidence: String(b.evidence || "").slice(0, 500),
       status: STATUSES.includes(b.status) ? b.status : "registered",
       investigatorId: "",
       source: "police",
@@ -78,6 +84,12 @@ export async function PATCH(request: Request) {
     if (typeof b.fabula === "string") c.fabula = b.fabula.slice(0, 5000);
     if (typeof b.applicant === "string") c.applicant = b.applicant.slice(0, 60);
     if (typeof b.suspect === "string") c.suspect = b.suspect.slice(0, 60);
+    if (typeof b.fullName === "string") c.fullName = b.fullName.slice(0, 160);
+    if (typeof b.court === "string") c.court = b.court.slice(0, 200);
+    if (typeof b.eventDate === "string") c.eventDate = b.eventDate.slice(0, 120);
+    if (typeof b.eventPlace === "string") c.eventPlace = b.eventPlace.slice(0, 200);
+    if (typeof b.witnesses === "string") c.witnesses = b.witnesses.slice(0, 400);
+    if (typeof b.evidence === "string") c.evidence = b.evidence.slice(0, 500);
     if (typeof b.signature === "string") c.signature = b.signature.slice(0, 400);
     if (typeof b.applicantSignature === "string") c.applicantSignature = b.applicantSignature.slice(0, 400);
     if (typeof b.entry === "string" && b.entry.trim()) {

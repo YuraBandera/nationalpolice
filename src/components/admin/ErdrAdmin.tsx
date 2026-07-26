@@ -6,6 +6,7 @@ import { IconPlus, IconTrash } from "@/components/icons";
 import { statusLabel, statusColor, ERDR_STATUSES, articleTitle } from "@/lib/kkArticles";
 import { ArticlePicker } from "@/components/erdr/ArticlePicker";
 import { SignatureUpload } from "@/components/erdr/SignatureUpload";
+import { StatementDocument } from "@/components/erdr/StatementDocument";
 import { AdminCard, SectionHead, Field, AInput, ABtn, EmptyState } from "./ui";
 import type { ErdrCase } from "@/lib/types";
 
@@ -187,12 +188,21 @@ function CaseEditor({ item, onClose, onSaved }: { item?: ErdrCase; onClose: () =
   const [fabula, setFabula] = useState(item?.fabula || "");
   const [applicant, setApplicant] = useState(item?.applicant || "");
   const [suspect, setSuspect] = useState(item?.suspect || "");
+  const [fullName, setFullName] = useState(item?.fullName || "");
+  const [court, setCourt] = useState(item?.court || "");
+  const [eventDate, setEventDate] = useState(item?.eventDate || "");
+  const [eventPlace, setEventPlace] = useState(item?.eventPlace || "");
+  const [witnesses, setWitnesses] = useState(item?.witnesses || "");
+  const [evidence, setEvidence] = useState(item?.evidence || "");
   const [status, setStatus] = useState(item?.status || "registered");
   const [signature, setSignature] = useState(item?.signature || "");
   const [applicantSignature, setApplicantSignature] = useState(item?.applicantSignature || "");
   const [entry, setEntry] = useState("");
+  const [showDoc, setShowDoc] = useState(false);
   const [entries, setEntries] = useState(item?.entries || []);
   const [busy, setBusy] = useState(false);
+
+  const docFields = { fullName, court, eventDate, eventPlace, witnesses, evidence };
 
   async function save() {
     setBusy(true);
@@ -200,14 +210,14 @@ function CaseEditor({ item, onClose, onSaved }: { item?: ErdrCase; onClose: () =
       if (editing) {
         const r = await fetch("/api/erdr/cases-admin", {
           method: "PATCH", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: item!.id, articles, fabula, applicant, suspect, status, signature, applicantSignature }),
+          body: JSON.stringify({ id: item!.id, articles, fabula, applicant, suspect, status, signature, applicantSignature, ...docFields }),
         });
         if (!r.ok) return toast("Не вдалося зберегти", "error");
         toast("Провадження оновлено", "success");
       } else {
         const r = await fetch("/api/erdr/cases-admin", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ articles, fabula, applicant, suspect, status, signature, applicantSignature }),
+          body: JSON.stringify({ articles, fabula, applicant, suspect, status, signature, applicantSignature, ...docFields }),
         });
         const d = await r.json().catch(() => ({}));
         if (!r.ok) return toast(d.error || "Не вдалося створити", "error");
@@ -273,6 +283,12 @@ function CaseEditor({ item, onClose, onSaved }: { item?: ErdrCase; onClose: () =
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Заявник (Roblox)"><AInput value={applicant} onChange={(e) => setApplicant(e.target.value)} /></Field>
             <Field label="Підозрюваний (Roblox)"><AInput value={suspect} onChange={(e) => setSuspect(e.target.value)} /></Field>
+            <Field label="ПІБ заявника"><AInput value={fullName} onChange={(e) => setFullName(e.target.value)} /></Field>
+            <Field label="Кому подається"><AInput value={court} onChange={(e) => setCourt(e.target.value)} /></Field>
+            <Field label="Дата й час події"><AInput value={eventDate} onChange={(e) => setEventDate(e.target.value)} /></Field>
+            <Field label="Місце події"><AInput value={eventPlace} onChange={(e) => setEventPlace(e.target.value)} /></Field>
+            <Field label="Свідки"><AInput value={witnesses} onChange={(e) => setWitnesses(e.target.value)} /></Field>
+            <Field label="Докази"><AInput value={evidence} onChange={(e) => setEvidence(e.target.value)} /></Field>
           </div>
 
           <Field label="Фабула">
@@ -308,6 +324,33 @@ function CaseEditor({ item, onClose, onSaved }: { item?: ErdrCase; onClose: () =
               </div>
             </div>
           )}
+
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowDoc((v) => !v)}
+              className="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-ice/80 transition hover:bg-white/10 hover:text-white"
+            >
+              {showDoc ? "Сховати документ" : "Переглянути як документ"}
+            </button>
+            {showDoc && (
+              <div className="mt-3">
+                <StatementDocument
+                  official
+                  number={item?.number}
+                  status={status}
+                  applicant={applicant}
+                  suspect={suspect}
+                  fabula={fabula}
+                  signature={signature}
+                  applicantSignature={applicantSignature}
+                  articles={articles.map((code) => ({ code, title: articleTitle(code) }))}
+                  {...docFields}
+                  createdAt={item?.createdAt}
+                />
+              </div>
+            )}
+          </div>
 
           <div className="flex items-center gap-2 pt-2">
             <ABtn variant="signal" onClick={save} disabled={busy}>{editing ? "Зберегти" : "Створити"}</ABtn>

@@ -135,9 +135,16 @@ export interface ErdrCase {
   id: string;
   number: string; // номер ЄРДР
   articles: string[]; // статті ККУ
-  fabula: string; // фабула
+  fabula: string; // фабула / обставини події
   applicant: string; // заявник (Roblox нік)
   suspect: string; // підозрюваний (Roblox нік)
+  // реквізити заяви-документа:
+  fullName?: string; // ПІБ заявника
+  court?: string; // куди подається (орган)
+  eventDate?: string; // дата й час події
+  eventPlace?: string; // місце події
+  witnesses?: string; // свідки
+  evidence?: string; // докази (посилання/опис)
   status: ErdrStatus;
   investigatorId: string; // хто веде ("" — не призначено)
   source: "citizen" | "police";

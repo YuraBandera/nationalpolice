@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useToast } from "@/components/Toast";
 import { KK_ARTICLES, statusLabel, statusColor, ERDR_STATUSES, articleTitle } from "@/lib/kkArticles";
 import { SignatureUpload } from "./SignatureUpload";
+import { StatementDocument } from "./StatementDocument";
 import type { ErdrCase } from "@/lib/types";
 
 interface Session {
@@ -315,6 +316,8 @@ function CaseDetail({
   const toast = useToast();
   const [c, setC] = useState<ErdrCase>(item);
   const [entry, setEntry] = useState("");
+  const [arts, setArts] = useState<string[]>(item.articles || []);
+  const [showDoc, setShowDoc] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function patch(body: Record<string, unknown>, okMsg?: string) {
@@ -368,17 +371,21 @@ function CaseDetail({
           ))}
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ice/45">Статті</p>
-            <div className="mt-1 flex flex-wrap gap-1.5">
-              {c.articles.map((a) => (
-                <span key={a} className="rounded bg-white/8 px-2 py-1 text-xs text-ice/80">
-                  ст. {a} — {articleTitle(a)}
-                </span>
-              ))}
-              {c.articles.length === 0 && <span className="text-sm text-ice/40">не кваліфіковано</span>}
-            </div>
+            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-ice/45">
+              Кваліфікація (статті ККУ)
+            </p>
+            <ArticlePicker value={arts} onChange={setArts} />
+            {JSON.stringify(arts) !== JSON.stringify(c.articles) && (
+              <button
+                onClick={() => patch({ articles: arts }, "Статті збережено")}
+                disabled={busy}
+                className="btn-signal mt-2 px-3 py-1.5 text-[13px]"
+              >
+                Зберегти статті
+              </button>
+            )}
           </div>
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ice/45">Сторони</p>
@@ -400,6 +407,20 @@ function CaseDetail({
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-ice/45">Підпис заявника</p>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={c.applicantSignature} alt="Підпис заявника" className="h-14 w-40 rounded bg-white object-contain" />
+            </div>
+          )}
+        </div>
+
+        <div>
+          <button
+            onClick={() => setShowDoc((v) => !v)}
+            className="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-ice/80 transition hover:bg-white/10 hover:text-white"
+          >
+            {showDoc ? "Сховати документ" : "Переглянути як документ"}
+          </button>
+          {showDoc && (
+            <div className="mt-3">
+              <StatementDocument official {...c} articles={c.articles.map((code) => ({ code, title: articleTitle(code) }))} />
             </div>
           )}
         </div>

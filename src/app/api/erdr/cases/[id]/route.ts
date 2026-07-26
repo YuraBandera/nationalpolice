@@ -35,6 +35,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       c.articles = b.articles.map((a: unknown) => String(a)).filter(Boolean).slice(0, 20);
     }
     if (typeof b.suspect === "string") c.suspect = b.suspect.slice(0, 60);
+    if (typeof b.fullName === "string") c.fullName = b.fullName.slice(0, 160);
+    if (typeof b.court === "string") c.court = b.court.slice(0, 200);
+    if (typeof b.eventDate === "string") c.eventDate = b.eventDate.slice(0, 120);
+    if (typeof b.eventPlace === "string") c.eventPlace = b.eventPlace.slice(0, 200);
+    if (typeof b.witnesses === "string") c.witnesses = b.witnesses.slice(0, 400);
+    if (typeof b.evidence === "string") c.evidence = b.evidence.slice(0, 500);
     if (typeof b.signature === "string") c.signature = b.signature.slice(0, 400);
     if (b.assignSelf === true) c.investigatorId = inv.id;
     if (typeof b.entry === "string" && b.entry.trim()) {
