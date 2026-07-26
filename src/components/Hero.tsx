@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Emblem } from "./Emblem";
-import { IconArrowRight, IconAlert } from "./icons";
+import { IconArrowRight, IconAlert, IconFile } from "./icons";
 
 function KyivClock() {
   const [t, setT] = useState("--:--:--");
@@ -84,6 +84,10 @@ export function Hero() {
             <Link href="/complaint" className="btn-ghost border-white/20 bg-white/5 px-6 py-3.5 text-[15px] text-white hover:bg-white/10">
               <IconAlert width={17} height={17} />
               Подати скаргу
+            </Link>
+            <Link href="/erdr" className="btn-ghost border-white/20 bg-white/5 px-6 py-3.5 text-[15px] text-white hover:bg-white/10">
+              <IconFile width={17} height={17} />
+              ЄРДР
             </Link>
           </div>
         </motion.div>

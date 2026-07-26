@@ -8,9 +8,9 @@ import { IconCheck, IconArrowRight } from "@/components/icons";
 
 const empty = { applicant: "", suspect: "", fabula: "" };
 
-export function StatementForm() {
+export function StatementForm({ lockedApplicant }: { lockedApplicant?: string }) {
   const toast = useToast();
-  const [f, setF] = useState(empty);
+  const [f, setF] = useState({ ...empty, applicant: lockedApplicant || "" });
   const [website, setWebsite] = useState("");
   const openedAt = useRef<number>(Date.now());
   const [loading, setLoading] = useState(false);
@@ -37,7 +37,7 @@ export function StatementForm() {
         return;
       }
       setDoneNumber(d.number || "");
-      setF(empty);
+      setF({ ...empty, applicant: lockedApplicant || "" });
     } catch {
       toast("Не вдалося подати заяву", "error");
     } finally {
@@ -96,7 +96,13 @@ export function StatementForm() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="field-label">Ваш нік у Roblox *</label>
-          <input className="field" value={f.applicant} onChange={set("applicant")} placeholder="Ваш Roblox-нікнейм" />
+          <input
+            className="field disabled:bg-navy-900/5 disabled:text-navy-800/60"
+            value={f.applicant}
+            onChange={set("applicant")}
+            placeholder="Ваш Roblox-нікнейм"
+            disabled={!!lockedApplicant}
+          />
         </div>
         <div>
           <label className="field-label">Roblox-нік підозрюваного</label>
