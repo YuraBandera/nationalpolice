@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useToast } from "@/components/Toast";
 import { KK_ARTICLES, statusLabel, statusColor, ERDR_STATUSES, articleTitle } from "@/lib/kkArticles";
+import { SignatureUpload } from "./SignatureUpload";
 import type { ErdrCase } from "@/lib/types";
 
 interface Session {
@@ -250,6 +251,7 @@ function CreateCase({ onClose, onCreated }: { onClose: () => void; onCreated: ()
   const [fabula, setFabula] = useState("");
   const [applicant, setApplicant] = useState("");
   const [suspect, setSuspect] = useState("");
+  const [signature, setSignature] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function save() {
@@ -258,7 +260,7 @@ function CreateCase({ onClose, onCreated }: { onClose: () => void; onCreated: ()
       const r = await fetch("/api/erdr/cases", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ articles, fabula, applicant, suspect }),
+        body: JSON.stringify({ articles, fabula, applicant, suspect, signature }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) {
@@ -288,6 +290,9 @@ function CreateCase({ onClose, onCreated }: { onClose: () => void; onCreated: ()
             value={fabula}
             onChange={(e) => setFabula(e.target.value)}
           />
+        </Fld>
+        <Fld label="Ваш підпис (PNG)">
+          <SignatureUpload value={signature} onChange={setSignature} dark />
         </Fld>
         <button onClick={save} disabled={loading} className="btn-signal w-full py-3 disabled:opacity-60">
           {loading ? "Реєстрація…" : "Зареєструвати провадження"}
@@ -385,6 +390,18 @@ function CaseDetail({
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ice/45">Фабула</p>
           <p className="mt-1 whitespace-pre-wrap text-[15px] leading-relaxed text-ice/85">{c.fabula}</p>
+        </div>
+
+        <div>
+          <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-ice/45">Підпис слідчого</p>
+          <SignatureUpload value={c.signature} onChange={(url) => patch({ signature: url }, "Підпис оновлено")} dark />
+          {c.applicantSignature && (
+            <div className="mt-3">
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-ice/45">Підпис заявника</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={c.applicantSignature} alt="Підпис заявника" className="h-14 w-40 rounded bg-white object-contain" />
+            </div>
+          )}
         </div>
 
         <div>

@@ -48,6 +48,7 @@ export async function POST(request: Request) {
       status: "registered",
       investigatorId: inv.id,
       source: "police",
+      signature: String(b.signature || "").slice(0, 400),
       entries: [
         { id: uid(), text: "Провадження зареєстровано", author: inv.name || inv.login, at: now },
       ],

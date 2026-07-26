@@ -141,6 +141,8 @@ export interface ErdrCase {
   status: ErdrStatus;
   investigatorId: string; // хто веде ("" — не призначено)
   source: "citizen" | "police";
+  signature?: string; // підпис слідчого (URL зображення)
+  applicantSignature?: string; // підпис заявника (URL зображення)
   entries: ErdrEntry[];
   createdAt: string;
   updatedAt: string;

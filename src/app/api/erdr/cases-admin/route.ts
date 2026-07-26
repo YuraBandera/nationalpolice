@@ -43,6 +43,8 @@ export async function POST(request: Request) {
       status: STATUSES.includes(b.status) ? b.status : "registered",
       investigatorId: "",
       source: "police",
+      signature: String(b.signature || "").slice(0, 400),
+      applicantSignature: String(b.applicantSignature || "").slice(0, 400),
       entries: [{ id: uid(), text: "Провадження створено адміністратором", author: "Адміністратор", at: now }],
       createdAt: now,
       updatedAt: now,
@@ -76,6 +78,8 @@ export async function PATCH(request: Request) {
     if (typeof b.fabula === "string") c.fabula = b.fabula.slice(0, 5000);
     if (typeof b.applicant === "string") c.applicant = b.applicant.slice(0, 60);
     if (typeof b.suspect === "string") c.suspect = b.suspect.slice(0, 60);
+    if (typeof b.signature === "string") c.signature = b.signature.slice(0, 400);
+    if (typeof b.applicantSignature === "string") c.applicantSignature = b.applicantSignature.slice(0, 400);
     if (typeof b.entry === "string" && b.entry.trim()) {
       c.entries.push({ id: uid(), text: b.entry.slice(0, 2000), author: "Адміністратор", at: now });
     }

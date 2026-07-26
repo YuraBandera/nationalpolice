@@ -35,6 +35,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       c.articles = b.articles.map((a: unknown) => String(a)).filter(Boolean).slice(0, 20);
     }
     if (typeof b.suspect === "string") c.suspect = b.suspect.slice(0, 60);
+    if (typeof b.signature === "string") c.signature = b.signature.slice(0, 400);
     if (b.assignSelf === true) c.investigatorId = inv.id;
     if (typeof b.entry === "string" && b.entry.trim()) {
       c.entries.push({

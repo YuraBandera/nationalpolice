@@ -69,6 +69,8 @@ export async function POST(request: Request) {
       status: "registered",
       investigatorId: "",
       source: "citizen",
+      signature: "",
+      applicantSignature: String(b.applicantSignature || "").slice(0, 400),
       entries: [{ id: uid(), text: "Заяву прийнято від громадянина", author: "Система", at: now }],
       createdAt: now,
       updatedAt: now,

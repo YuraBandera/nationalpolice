@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 import { readDb } from "@/lib/db";
-import { articleTitle } from "@/lib/kkArticles";
+import { articleTitle, articlePunishment } from "@/lib/kkArticles";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -17,11 +17,14 @@ export async function GET(request: Request) {
   return NextResponse.json({
     found: true,
     number: c.number,
-    articles: c.articles.map((a) => ({ code: a, title: articleTitle(a) })),
+    articles: c.articles.map((a) => ({ code: a, title: articleTitle(a), punishment: articlePunishment(a) })),
     status: c.status,
     fabula: c.fabula,
     applicant: c.applicant,
     suspect: c.suspect,
+    signature: c.signature || "",
+    applicantSignature: c.applicantSignature || "",
+    source: c.source,
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
   });

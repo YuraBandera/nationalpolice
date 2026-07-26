@@ -5,6 +5,7 @@ import { useToast } from "@/components/Toast";
 import { IconPlus, IconTrash } from "@/components/icons";
 import { statusLabel, statusColor, ERDR_STATUSES, articleTitle } from "@/lib/kkArticles";
 import { ArticlePicker } from "@/components/erdr/ArticlePicker";
+import { SignatureUpload } from "@/components/erdr/SignatureUpload";
 import { AdminCard, SectionHead, Field, AInput, ABtn, EmptyState } from "./ui";
 import type { ErdrCase } from "@/lib/types";
 
@@ -187,6 +188,8 @@ function CaseEditor({ item, onClose, onSaved }: { item?: ErdrCase; onClose: () =
   const [applicant, setApplicant] = useState(item?.applicant || "");
   const [suspect, setSuspect] = useState(item?.suspect || "");
   const [status, setStatus] = useState(item?.status || "registered");
+  const [signature, setSignature] = useState(item?.signature || "");
+  const [applicantSignature, setApplicantSignature] = useState(item?.applicantSignature || "");
   const [entry, setEntry] = useState("");
   const [entries, setEntries] = useState(item?.entries || []);
   const [busy, setBusy] = useState(false);
@@ -197,14 +200,14 @@ function CaseEditor({ item, onClose, onSaved }: { item?: ErdrCase; onClose: () =
       if (editing) {
         const r = await fetch("/api/erdr/cases-admin", {
           method: "PATCH", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: item!.id, articles, fabula, applicant, suspect, status }),
+          body: JSON.stringify({ id: item!.id, articles, fabula, applicant, suspect, status, signature, applicantSignature }),
         });
         if (!r.ok) return toast("Не вдалося зберегти", "error");
         toast("Провадження оновлено", "success");
       } else {
         const r = await fetch("/api/erdr/cases-admin", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ articles, fabula, applicant, suspect, status }),
+          body: JSON.stringify({ articles, fabula, applicant, suspect, status, signature, applicantSignature }),
         });
         const d = await r.json().catch(() => ({}));
         if (!r.ok) return toast(d.error || "Не вдалося створити", "error");
@@ -278,6 +281,11 @@ function CaseEditor({ item, onClose, onSaved }: { item?: ErdrCase; onClose: () =
               value={fabula} onChange={(e) => setFabula(e.target.value)}
             />
           </Field>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Підпис слідчого (PNG)"><SignatureUpload value={signature} onChange={setSignature} dark /></Field>
+            <Field label="Підпис заявника (PNG)"><SignatureUpload value={applicantSignature} onChange={setApplicantSignature} dark /></Field>
+          </div>
 
           {editing && (
             <div>

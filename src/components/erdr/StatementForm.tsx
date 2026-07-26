@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { useToast } from "@/components/Toast";
 import { IconCheck, IconArrowRight } from "@/components/icons";
+import { SignatureUpload } from "./SignatureUpload";
 
 const empty = { applicant: "", suspect: "", fabula: "" };
 
 export function StatementForm({ lockedApplicant }: { lockedApplicant?: string }) {
   const toast = useToast();
   const [f, setF] = useState({ ...empty, applicant: lockedApplicant || "" });
+  const [signature, setSignature] = useState("");
   const [website, setWebsite] = useState("");
   const openedAt = useRef<number>(Date.now());
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ export function StatementForm({ lockedApplicant }: { lockedApplicant?: string })
       const r = await fetch("/api/erdr/statement", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...f, website, _t: openedAt.current }),
+        body: JSON.stringify({ ...f, applicantSignature: signature, website, _t: openedAt.current }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) {
@@ -117,6 +119,12 @@ export function StatementForm({ lockedApplicant }: { lockedApplicant?: string })
           onChange={set("fabula")}
           placeholder="Що сталося, коли, за яких обставин, хто свідки…"
         />
+      </div>
+
+      <div className="mt-4">
+        <label className="field-label">Ваш підпис</label>
+        <SignatureUpload value={signature} onChange={setSignature} />
+        <p className="mt-1.5 text-[12px] text-navy-800/45">Необов'язково. Зображення підпису (PNG), додається до заяви як документа.</p>
       </div>
 
       <div className="mt-7 flex items-center justify-between gap-4">
