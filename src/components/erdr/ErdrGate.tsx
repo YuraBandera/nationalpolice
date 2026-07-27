@@ -6,6 +6,7 @@ import { Emblem } from "@/components/Emblem";
 import { useToast } from "@/components/Toast";
 import { ErdrLookup } from "./ErdrLookup";
 import { StatementForm } from "./StatementForm";
+import { AdminOffenseForm } from "./AdminOffenseForm";
 import { IconFile, IconAlert, IconLock, IconArrowRight, IconExternal } from "@/components/icons";
 
 interface Access {
@@ -23,7 +24,7 @@ export function ErdrGate() {
   const [ready, setReady] = useState(false);
   const [nick, setNick] = useState("");
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<"lookup" | "statement">("lookup");
+  const [tab, setTab] = useState<"lookup" | "statement" | "offense">("lookup");
 
   useEffect(() => {
     try {
@@ -183,7 +184,7 @@ export function ErdrGate() {
       </div>
 
       {/* перемикач */}
-      <div className="mb-5 flex gap-1 rounded-xl border border-navy-900/10 bg-white p-1">
+      <div className="mb-5 flex flex-wrap gap-1 rounded-xl border border-navy-900/10 bg-white p-1">
         <button
           onClick={() => setTab("lookup")}
           className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
@@ -198,11 +199,21 @@ export function ErdrGate() {
             tab === "statement" ? "bg-navy-900 text-white" : "text-navy-800/60 hover:text-navy-900"
           }`}
         >
-          Подати заяву про злочин
+          Заява про злочин
+        </button>
+        <button
+          onClick={() => setTab("offense")}
+          className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
+            tab === "offense" ? "bg-navy-900 text-white" : "text-navy-800/60 hover:text-navy-900"
+          }`}
+        >
+          Адмінправопорушення
         </button>
       </div>
 
-      {tab === "lookup" ? <ErdrLookup /> : <StatementForm lockedApplicant={access.nick} />}
+      {tab === "lookup" && <ErdrLookup />}
+      {tab === "statement" && <StatementForm lockedApplicant={access.nick} />}
+      {tab === "offense" && <AdminOffenseForm lockedApplicant={access.nick} />}
     </div>
   );
 }

@@ -89,3 +89,43 @@ export async function notifyComplaint(c: Complaint): Promise<void> {
     timestamp: c.createdAt,
   });
 }
+
+export interface AdminOffenseInput {
+  applicant: string; // Roblox нік заявника
+  offender: string; // Roblox нік порушника
+  vehicle: string; // номер ТЗ
+  article: string; // стаття КУпАП
+  articleTitle: string;
+  punishment: string;
+  place: string;
+  when: string;
+  circumstances: string;
+  evidence: string;
+}
+
+export async function notifyAdminOffense(o: AdminOffenseInput): Promise<void> {
+  const [self, target] = await Promise.all([
+    o.applicant ? resolveRoblox(o.applicant).catch(() => null) : Promise.resolve(null),
+    o.offender ? resolveRoblox(o.offender).catch(() => null) : Promise.resolve(null),
+  ]);
+  const selfVal = self ? `[${self.displayName} (@${self.name})](${self.profileUrl})` : o.applicant;
+  const targetVal = target ? `[${target.displayName} (@${target.name})](${target.profileUrl})` : o.offender;
+
+  await send(process.env.DISCORD_WEBHOOK_ADMIN, {
+    title: "🚓 Заява про адміністративне правопорушення",
+    color: 0xf59e0b,
+    thumbnail: target?.avatar ? { url: target.avatar } : undefined,
+    fields: [
+      { name: "Стаття КУпАП", value: `ст. ${o.article} — ${o.articleTitle}` },
+      { name: "Санкція", value: clip(o.punishment, 300), inline: true },
+      { name: "Номер ТЗ", value: clip(o.vehicle || "—", 60), inline: true },
+      { name: "Порушник (Roblox)", value: clip(targetVal, 300) },
+      { name: "Заявник (Roblox)", value: clip(selfVal, 300) },
+      { name: "Місце", value: clip(o.place || "—", 200), inline: true },
+      { name: "Час", value: clip(o.when || "—", 100), inline: true },
+      { name: "Обставини", value: clip(o.circumstances) },
+      { name: "Доказ", value: clip(o.evidence, 500) },
+    ],
+    timestamp: new Date().toISOString(),
+  });
+}
