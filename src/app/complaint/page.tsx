@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ComplaintForm } from "@/components/ComplaintForm";
+import { GatedComplaint } from "@/components/GatedComplaint";
 import { Footer } from "@/components/Footer";
 import { IconAlert, IconArrowRight } from "@/components/icons";
 
@@ -55,7 +55,7 @@ export default function ComplaintPage() {
 
         <section className="bg-ice py-14 sm:py-20">
           <div className="container-x max-w-3xl">
-            <ComplaintForm />
+            <GatedComplaint />
           </div>
         </section>
       </main>

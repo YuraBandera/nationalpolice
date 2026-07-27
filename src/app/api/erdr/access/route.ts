@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
   // легкий ліміт, щоб реєстр не використовували як проксі до Roblox
   const ip = clientIp(request);
-  const spam = checkSpam(ip, { minGapMs: 1500, max: 40, windowMs: 60 * 60_000 });
+  const spam = checkSpam(ip, { scope: "access", minGapMs: 1500, max: 40, windowMs: 60 * 60_000 });
   if (!spam.ok) return NextResponse.json({ error: spam.reason }, { status: 429 });
 
   const user = await resolveRoblox(nick);

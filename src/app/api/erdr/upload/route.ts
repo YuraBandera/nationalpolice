@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   const inv = await currentInvestigator();
   const admin = isAuthed();
   if (!inv && !admin) {
-    const spam = checkSpam(clientIp(request), { minGapMs: 4000, max: 8, windowMs: 60 * 60_000 });
+    const spam = checkSpam(clientIp(request), { scope: "upload", minGapMs: 4000, max: 8, windowMs: 60 * 60_000 });
     if (!spam.ok) return NextResponse.json({ error: spam.reason }, { status: 429 });
   }
 

@@ -25,6 +25,8 @@ function hash(s: string): string {
 }
 
 export interface SpamCheckOptions {
+  /** окремий «кошик» лічильника (щоб різні дії не блокували одна одну) */
+  scope?: string;
   /** мінімальний інтервал між надсиланнями з одного IP, мс */
   minGapMs?: number;
   /** максимум надсилань з IP за вікно */
@@ -48,12 +50,13 @@ export function checkSpam(ip: string, opts: SpamCheckOptions = {}): SpamResult {
   const max = opts.max ?? 6; // не більше 6
   const windowMs = opts.windowMs ?? 60 * 60_000; // за годину
   const dupWindowMs = opts.dupWindowMs ?? 10 * 60_000; // 10 хв
+  const bucket = `${opts.scope || "default"}:${ip}`;
 
   // періодичне прибирання пам'яті
   if (ipHits.size > 5000) ipHits.clear();
   if (recentBodies.size > 5000) recentBodies.clear();
 
-  const hits = (ipHits.get(ip) || []).filter((h) => now - h.t < windowMs);
+  const hits = (ipHits.get(bucket) || []).filter((h) => now - h.t < windowMs);
 
   // 1) занадто часто
   if (hits.length > 0) {
@@ -83,7 +86,7 @@ export function checkSpam(ip: string, opts: SpamCheckOptions = {}): SpamResult {
 
   // фіксуємо успішне надсилання
   hits.push({ t: now });
-  ipHits.set(ip, hits);
+  ipHits.set(bucket, hits);
   return { ok: true };
 }
 

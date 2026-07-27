@@ -9,9 +9,9 @@ import { UNITS } from "@/lib/site";
 
 const empty = { discord: "", nickname: "", robloxSelf: "", robloxTarget: "", against: "", unit: "", date: "", description: "", evidence: "" };
 
-export function ComplaintForm() {
+export function ComplaintForm({ lockedRoblox }: { lockedRoblox?: string }) {
   const toast = useToast();
-  const [f, setF] = useState(empty);
+  const [f, setF] = useState({ ...empty, robloxSelf: lockedRoblox || "" });
   const [website, setWebsite] = useState(""); // honeypot — має лишатись порожнім
   const openedAt = useRef<number>(Date.now());
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,7 @@ export function ComplaintForm() {
         return;
       }
       setDone(true);
-      setF(empty);
+      setF({ ...empty, robloxSelf: lockedRoblox || "" });
     } catch {
       toast("Не вдалося подати скаргу. Спробуйте ще раз", "error");
     } finally {
@@ -88,7 +88,7 @@ export function ComplaintForm() {
             </div>
             <div>
               <label className="field-label">Ваш нік у Roblox *</label>
-              <input className="field" value={f.robloxSelf} onChange={set("robloxSelf")} placeholder="Ваш Roblox-нікнейм" />
+              <input className="field disabled:bg-navy-900/5 disabled:text-navy-800/60" value={f.robloxSelf} onChange={set("robloxSelf")} placeholder="Ваш Roblox-нікнейм" disabled={!!lockedRoblox} />
             </div>
             <div>
               <label className="field-label">Roblox-нік порушника *</label>

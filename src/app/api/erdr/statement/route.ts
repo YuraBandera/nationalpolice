@@ -49,6 +49,7 @@ export async function POST(request: Request) {
   // Антиспам + кулдаун 5 хв
   const ip = clientIp(request);
   const spam = checkSpam(ip, {
+    scope: "statement",
     minGapMs: 5 * 60_000,
     max: 6,
     windowMs: 60 * 60_000,
